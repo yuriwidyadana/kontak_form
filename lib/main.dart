@@ -42,9 +42,10 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final List<Contact> contacts = [
     Contact(
-      name: 'Annisa Kusumastuti',
-      email: 'nisa@gmail.com',
-      phone: '0895421903057',
+      name: 'Muhammad Finza Muta\'ali',
+      email: 'sgsok812@gmail.com',
+      phone: '0895422365052',
+      isFavorite: true, // Otomatis langsung masuk ke tab Favorit
     ),
   ];
 
@@ -70,7 +71,7 @@ class _HomeScreenState extends State<HomeScreen> {
         appBar: AppBar(
           backgroundColor: Colors.blue,
           foregroundColor: Colors.white,
-          title: const Text('BUKU KONTAK YURI'),
+          title: const Text('BUKU KONTAK'),
           bottom: const TabBar(
             labelColor: Colors.white,
             unselectedLabelColor: Colors.white70,
@@ -277,7 +278,7 @@ class TentangScreen extends StatelessWidget {
             ),
             SizedBox(height: 15),
             Text(
-              'Yuri Aulia Widyadana',
+              'Muhammad Finza Muta\'ali',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 5),
