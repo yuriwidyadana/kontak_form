@@ -70,7 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
         appBar: AppBar(
           backgroundColor: Colors.blue,
           foregroundColor: Colors.white,
-          title: const Text('BUKU KONTAK'),
+          title: const Text('BUKU KONTAK YURI'),
           bottom: const TabBar(
             labelColor: Colors.white,
             unselectedLabelColor: Colors.white70,
@@ -91,7 +91,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   alignment: Alignment.bottomLeft,
                   child: Text(
                     'BUKU KONTAK',
-                    style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
@@ -107,7 +111,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   Navigator.pop(context);
                   final result = await Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const TambahKontakScreen()),
+                    MaterialPageRoute(
+                      builder: (context) => const TambahKontakScreen(),
+                    ),
                   );
                   if (result != null && result is Contact) {
                     _addContact(result.name, result.email, result.phone);
@@ -126,7 +132,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   Navigator.pop(context);
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const TentangScreen()),
+                    MaterialPageRoute(
+                      builder: (context) => const TentangScreen(),
+                    ),
                   );
                 },
               ),
@@ -177,7 +185,9 @@ class _HomeScreenState extends State<HomeScreen> {
           onPressed: () async {
             final result = await Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const TambahKontakScreen()),
+              MaterialPageRoute(
+                builder: (context) => const TambahKontakScreen(),
+              ),
             );
             if (result != null && result is Contact) {
               _addContact(result.name, result.email, result.phone);
@@ -213,9 +223,18 @@ class _TambahKontakScreenState extends State<TambahKontakScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            TextField(controller: _nameController, decoration: const InputDecoration(labelText: 'Nama Lengkap')),
-            TextField(controller: _emailController, decoration: const InputDecoration(labelText: 'Email')),
-            TextField(controller: _phoneController, decoration: const InputDecoration(labelText: 'No Handphone')),
+            TextField(
+              controller: _nameController,
+              decoration: const InputDecoration(labelText: 'Nama Lengkap'),
+            ),
+            TextField(
+              controller: _emailController,
+              decoration: const InputDecoration(labelText: 'Email'),
+            ),
+            TextField(
+              controller: _phoneController,
+              decoration: const InputDecoration(labelText: 'No Handphone'),
+            ),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
@@ -229,7 +248,7 @@ class _TambahKontakScreenState extends State<TambahKontakScreen> {
                 }
               },
               child: const Text('Simpan'),
-            )
+            ),
           ],
         ),
       ),
@@ -257,7 +276,10 @@ class TentangScreen extends StatelessWidget {
               backgroundImage: AssetImage('assets/foto.jpg'),
             ),
             SizedBox(height: 15),
-            Text('Yuri Aulia Widyadana', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text(
+              'Yuri Aulia Widyadana',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
             SizedBox(height: 5),
             Text('XII RPL B'),
             SizedBox(height: 5),
