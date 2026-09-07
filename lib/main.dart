@@ -8,12 +8,14 @@ class Contact {
   final String name;
   final String email;
   final String phone;
+  final String? category; // Nullable property untuk Tugas 4
   bool isFavorite;
 
   Contact({
     required this.name,
     required this.email,
     required this.phone,
+    this.category, // Opsional
     this.isFavorite = false,
   });
 }
@@ -45,6 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
       name: 'Muhammad Finza Muta\'ali',
       email: 'sgsok812@gmail.com',
       phone: '0895422365052',
+      category: 'Teman',
       isFavorite: true,
     ),
   ];
@@ -55,9 +58,14 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  void _addContact(String name, String email, String phone) {
+  void _addContact(String name, String email, String phone, String? category) {
     setState(() {
-      contacts.add(Contact(name: name, email: email, phone: phone));
+      contacts.add(Contact(
+        name: name,
+        email: email,
+        phone: phone,
+        category: category!.isEmpty ? null : category,
+      ));
     });
   }
 
@@ -117,7 +125,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   );
                   if (result != null && result is Contact) {
-                    _addContact(result.name, result.email, result.phone);
+                    _addContact(result.name, result.email, result.phone, result.category);
                   }
                 },
               ),
@@ -157,7 +165,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   title: Text(contact.name),
-                  subtitle: Text('${contact.email}\n${contact.phone}'),
+                  subtitle: Text(
+                    '${contact.email}\n${contact.phone}\nKategori: ${contact.category ?? 'Tanpa kategori'}',
+                  ),
                   trailing: IconButton(
                     icon: Icon(
                       contact.isFavorite ? Icons.star : Icons.star_border,
@@ -183,7 +193,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                         title: Text(contact.name),
-                        subtitle: Text('${contact.email}\n${contact.phone}'),
+                        subtitle: Text(
+                          '${contact.email}\n${contact.phone}\nKategori: ${contact.category ?? 'Tanpa kategori'}',
+                        ),
                         trailing: IconButton(
                           icon: const Icon(Icons.star, color: Colors.amber),
                           onPressed: () => _toggleFavorite(contact),
@@ -203,7 +215,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             );
             if (result != null && result is Contact) {
-              _addContact(result.name, result.email, result.phone);
+              _addContact(result.name, result.email, result.phone, result.category);
             }
           },
         ),
@@ -223,6 +235,7 @@ class _TambahKontakScreenState extends State<TambahKontakScreen> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
+  final _categoryController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -248,6 +261,12 @@ class _TambahKontakScreenState extends State<TambahKontakScreen> {
               controller: _phoneController,
               decoration: const InputDecoration(labelText: 'No Handphone'),
             ),
+            TextField(
+              controller: _categoryController,
+              decoration: const InputDecoration(
+                labelText: 'Kategori (Opsional: Keluarga, Teman, Kerja)',
+              ),
+            ),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
@@ -256,6 +275,9 @@ class _TambahKontakScreenState extends State<TambahKontakScreen> {
                     name: _nameController.text,
                     email: _emailController.text,
                     phone: _phoneController.text,
+                    category: _categoryController.text.isEmpty
+                        ? null
+                        : _categoryController.text,
                   );
                   Navigator.pop(context, newContact);
                 }
