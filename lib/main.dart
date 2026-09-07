@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -52,6 +53,15 @@ class _HomeScreenState extends State<HomeScreen> {
     ),
   ];
 
+  final StreamController<String> _searchController = StreamController<String>.broadcast();
+  String _searchQuery = '';
+
+  @override
+  void dispose() {
+    _searchController.close();
+    super.dispose();
+  }
+
   void _toggleFavorite(Contact contact) {
     setState(() {
       contact.isFavorite = !contact.isFavorite;
@@ -71,6 +81,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final filteredContacts = contacts.where((contact) {
+      final nameLower = contact.name.toLowerCase();
+      final categoryLower = (contact.category ?? '').toLowerCase();
+      final query = _searchQuery.toLowerCase();
+      return nameLower.contains(query) || categoryLower.contains(query);
+    }).toList();
+
     final favoriteContacts = contacts.where((c) => c.isFavorite).toList();
 
     return DefaultTabController(
@@ -155,59 +172,92 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
         ),
-        body: TabBarView(
+        body: Column(
           children: [
-            ListView.builder(
-              itemCount: contacts.length,
-              itemBuilder: (context, index) {
-                final contact = contacts[index];
-                return ListTile(
-                  leading: CircleAvatar(
-                    child: Text(
-                      contact.name.isNotEmpty
-                          ? contact.name[0].toUpperCase()
-                          : '?',
-                    ),
-                  ),
-                  title: Text(contact.name),
-                  subtitle: Text(
-                    '${contact.email}\n${contact.phone}\nKategori: ${contact.category ?? 'Tanpa kategori'}',
-                  ),
-                  trailing: IconButton(
-                    icon: Icon(
-                      contact.isFavorite ? Icons.star : Icons.star_border,
-                      color: contact.isFavorite ? Colors.amber : Colors.grey,
-                    ),
-                    onPressed: () => _toggleFavorite(contact),
-                  ),
-                );
-              },
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                decoration: const InputDecoration(
+                  labelText: 'Cari Kontak / Kategori',
+                  prefixIcon: Icon(Icons.search),
+                  border: OutlineInputBorder(),
+                ),
+                onChanged: (value) {
+                  _searchController.add(value);
+                },
+              ),
             ),
-            favoriteContacts.isEmpty
-                ? const Center(child: Text('Belum ada kontak favorit.'))
-                : ListView.builder(
-                    itemCount: favoriteContacts.length,
-                    itemBuilder: (context, index) {
-                      final contact = favoriteContacts[index];
-                      return ListTile(
-                        leading: CircleAvatar(
-                          child: Text(
-                            contact.name.isNotEmpty
-                                ? contact.name[0].toUpperCase()
-                                : '?',
-                          ),
-                        ),
-                        title: Text(contact.name),
-                        subtitle: Text(
-                          '${contact.email}\n${contact.phone}\nKategori: ${contact.category ?? 'Tanpa kategori'}',
-                        ),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.star, color: Colors.amber),
-                          onPressed: () => _toggleFavorite(contact),
-                        ),
-                      );
-                    },
-                  ),
+            Expanded(
+              child: StreamBuilder<String>(
+                stream: _searchController.stream,
+                initialData: '',
+                builder: (context, snapshot) {
+                  _searchQuery = snapshot.data ?? '';
+                  final displayList = contacts.where((contact) {
+                    final nameLower = contact.name.toLowerCase();
+                    final categoryLower = (contact.category ?? '').toLowerCase();
+                    final query = _searchQuery.toLowerCase();
+                    return nameLower.contains(query) || categoryLower.contains(query);
+                  }).toList();
+
+                  return TabBarView(
+                    children: [
+                      ListView.builder(
+                        itemCount: displayList.length,
+                        itemBuilder: (context, index) {
+                          final contact = displayList[index];
+                          return ListTile(
+                            leading: CircleAvatar(
+                              child: Text(
+                                contact.name.isNotEmpty
+                                    ? contact.name[0].toUpperCase()
+                                    : '?',
+                              ),
+                            ),
+                            title: Text(contact.name),
+                            subtitle: Text(
+                              '${contact.email}\n${contact.phone}\nKategori: ${contact.category ?? 'Tanpa kategori'}',
+                            ),
+                            trailing: IconButton(
+                              icon: Icon(
+                                contact.isFavorite ? Icons.star : Icons.star_border,
+                                color: contact.isFavorite ? Colors.amber : Colors.grey,
+                              ),
+                              onPressed: () => _toggleFavorite(contact),
+                            ),
+                          );
+                        },
+                      ),
+                      favoriteContacts.isEmpty
+                          ? const Center(child: Text('Belum ada kontak favorit.'))
+                          : ListView.builder(
+                              itemCount: favoriteContacts.length,
+                              itemBuilder: (context, index) {
+                                final contact = favoriteContacts[index];
+                                return ListTile(
+                                  leading: CircleAvatar(
+                                    child: Text(
+                                      contact.name.isNotEmpty
+                                          ? contact.name[0].toUpperCase()
+                                          : '?',
+                                    ),
+                                  ),
+                                  title: Text(contact.name),
+                                  subtitle: Text(
+                                    '${contact.email}\n${contact.phone}\nKategori: ${contact.category ?? 'Tanpa kategori'}',
+                                  ),
+                                  trailing: IconButton(
+                                    icon: const Icon(Icons.star, color: Colors.amber),
+                                    onPressed: () => _toggleFavorite(contact),
+                                  ),
+                                );
+                              },
+                            ),
+                    ],
+                  );
+                },
+              ),
+            ),
           ],
         ),
         floatingActionButton: FloatingActionButton(
