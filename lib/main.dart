@@ -8,14 +8,14 @@ class Contact {
   final String name;
   final String email;
   final String phone;
-  final String? category; // Nullable property untuk Tugas 4
+  final String? category;
   bool isFavorite;
 
   Contact({
     required this.name,
     required this.email,
     required this.phone,
-    this.category, // Opsional
+    this.category,
     this.isFavorite = false,
   });
 }
@@ -64,7 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
         name: name,
         email: email,
         phone: phone,
-        category: category!.isEmpty ? null : category,
+        category: category != null && category.isEmpty ? null : category,
       ));
     });
   }
@@ -125,7 +125,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   );
                   if (result != null && result is Contact) {
-                    _addContact(result.name, result.email, result.phone, result.category);
+                    _addContact(
+                      result.name,
+                      result.email,
+                      result.phone,
+                      result.category,
+                    );
                   }
                 },
               ),
@@ -215,7 +220,12 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             );
             if (result != null && result is Contact) {
-              _addContact(result.name, result.email, result.phone, result.category);
+              _addContact(
+                result.name,
+                result.email,
+                result.phone,
+                result.category,
+              );
             }
           },
         ),
@@ -232,6 +242,7 @@ class TambahKontakScreen extends StatefulWidget {
 }
 
 class _TambahKontakScreenState extends State<TambahKontakScreen> {
+  final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
@@ -247,44 +258,77 @@ class _TambahKontakScreenState extends State<TambahKontakScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _nameController,
-              decoration: const InputDecoration(labelText: 'Nama Lengkap'),
+        child: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                TextFormField(
+                  controller: _nameController,
+                  decoration: const InputDecoration(labelText: 'Nama Lengkap'),
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Nama wajib diisi';
+                    }
+                    return null;
+                  },
+                ),
+                TextFormField(
+                  controller: _emailController,
+                  decoration: const InputDecoration(labelText: 'Email'),
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Email wajib diisi';
+                    }
+                    if (!value.contains('@')) {
+                      return 'Email harus mengandung karakter @';
+                    }
+                    return null;
+                  },
+                ),
+                TextFormField(
+                  controller: _phoneController,
+                  decoration: const InputDecoration(labelText: 'No Handphone'),
+                  keyboardType: TextInputType.phone,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'No Handphone wajib diisi';
+                    }
+                    if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
+                      return 'No Handphone hanya boleh angka';
+                    }
+                    if (value.length < 10) {
+                      return 'No Handphone minimal 10 digit';
+                    }
+                    return null;
+                  },
+                ),
+                TextFormField(
+                  controller: _categoryController,
+                  decoration: const InputDecoration(
+                    labelText: 'Kategori (Opsional)',
+                  ),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      final newContact = Contact(
+                        name: _nameController.text,
+                        email: _emailController.text,
+                        phone: _phoneController.text,
+                        category: _categoryController.text.isEmpty
+                            ? null
+                            : _categoryController.text,
+                      );
+                      Navigator.pop(context, newContact);
+                    }
+                  },
+                  child: const Text('Simpan'),
+                ),
+              ],
             ),
-            TextField(
-              controller: _emailController,
-              decoration: const InputDecoration(labelText: 'Email'),
-            ),
-            TextField(
-              controller: _phoneController,
-              decoration: const InputDecoration(labelText: 'No Handphone'),
-            ),
-            TextField(
-              controller: _categoryController,
-              decoration: const InputDecoration(
-                labelText: 'Kategori (Opsional: Keluarga, Teman, Kerja)',
-              ),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                if (_nameController.text.isNotEmpty) {
-                  final newContact = Contact(
-                    name: _nameController.text,
-                    email: _emailController.text,
-                    phone: _phoneController.text,
-                    category: _categoryController.text.isEmpty
-                        ? null
-                        : _categoryController.text,
-                  );
-                  Navigator.pop(context, newContact);
-                }
-              },
-              child: const Text('Simpan'),
-            ),
-          ],
+          ),
         ),
       ),
     );
