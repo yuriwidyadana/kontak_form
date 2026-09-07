@@ -45,7 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
       name: 'Muhammad Finza Muta\'ali',
       email: 'sgsok812@gmail.com',
       phone: '0895422365052',
-      isFavorite: true, // Otomatis langsung masuk ke tab Favorit
+      isFavorite: true,
     ),
   ];
 
@@ -149,7 +149,13 @@ class _HomeScreenState extends State<HomeScreen> {
               itemBuilder: (context, index) {
                 final contact = contacts[index];
                 return ListTile(
-                  leading: const Icon(Icons.person),
+                  leading: CircleAvatar(
+                    child: Text(
+                      contact.name.isNotEmpty
+                          ? contact.name[0].toUpperCase()
+                          : '?',
+                    ),
+                  ),
                   title: Text(contact.name),
                   subtitle: Text('${contact.email}\n${contact.phone}'),
                   trailing: IconButton(
@@ -169,7 +175,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     itemBuilder: (context, index) {
                       final contact = favoriteContacts[index];
                       return ListTile(
-                        leading: const Icon(Icons.person),
+                        leading: CircleAvatar(
+                          child: Text(
+                            contact.name.isNotEmpty
+                                ? contact.name[0].toUpperCase()
+                                : '?',
+                          ),
+                        ),
                         title: Text(contact.name),
                         subtitle: Text('${contact.email}\n${contact.phone}'),
                         trailing: IconButton(
